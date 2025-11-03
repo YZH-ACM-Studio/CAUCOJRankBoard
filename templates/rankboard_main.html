@@ -1,0 +1,1162 @@
+{% extends "layout/basic.html" %}
+{% block content %}
+<script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-primary: #f3f4f6;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f9fafb;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --text-tertiary: #9ca3af;
+    --border-color: #e5e7eb;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --hover-bg: #f0f9ff;
+    --card-bg: #ffffff;
+    --input-bg: #ffffff;
+    --input-border: #d1d5db;
+    --table-header-bg: #f9fafb;
+    --table-row-hover: #f9fafb;
+}
+
+[data-theme="dark"] {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #94a3b8;
+    --border-color: #334155;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+    --hover-bg: #1e3a5f;
+    --card-bg: #1e293b;
+    --input-bg: #334155;
+    --input-border: #475569;
+    --table-header-bg: #1e293b;
+    --table-row-hover: #334155;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0ea5e9;
+    margin-bottom: 0.5rem;
+}
+
+.header p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1rem;
+    transition: background-color 0.3s;
+}
+
+.search-container {
+    padding: 1rem;
+}
+
+.search-box {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.input {
+    flex: 1;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--input-border);
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.15s;
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+}
+
+.input:focus {
+    border-color: #0ea5e9;
+}
+
+.btn {
+    padding: 0.625rem 1.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+
+.btn:hover {
+    opacity: 0.85;
+}
+
+.btn-primary {
+    background-color: #0ea5e9;
+    color: white;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #0ea5e9;
+    color: white;
+}
+
+th {
+    padding: 0.875rem 0.75rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+}
+
+td {
+    padding: 0.875rem 0.75rem;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+tbody tr:nth-child(even) {
+    background-color: var(--bg-tertiary);
+}
+
+tbody tr:hover {
+    background-color: var(--hover-bg);
+}
+
+.footer {
+    text-align: center;
+    margin-top: 1rem;
+    color: var(--text-tertiary);
+    font-size: 0.875rem;
+}
+
+.footer .count {
+    color: #0ea5e9;
+    font-weight: 600;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    animation: modalSlideIn 0.3s ease-out;
+    transition: background-color 0.3s;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.modal-close {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.375rem;
+    border: none;
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-size: 1.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+}
+
+.modal-close:hover {
+    background-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: 1.5rem;
+    color: var(--text-primary);
+}
+
+.detail-card {
+    background: var(--card-bg);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border: 2px solid var(--border-color);
+    transition: all 0.2s;
+}
+
+.detail-card:hover {
+    border-color: #0ea5e9;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.1);
+}
+
+.detail-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.detail-award-type {
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+}
+
+.detail-award-badge {
+    padding: 0.375rem 0.875rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: white;
+}
+
+.detail-award-badge.gold {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.detail-award-badge.silver {
+    background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+}
+
+.detail-award-badge.bronze {
+    background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
+}
+
+.detail-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.detail-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-info-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.detail-info-value {
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.detail-empty {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-tertiary);
+}
+
+.detail-summary {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+[data-theme="dark"] .detail-summary {
+    background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%);
+}
+
+.detail-summary-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #0c4a6e;
+    margin-bottom: 1rem;
+}
+
+[data-theme="dark"] .detail-summary-title {
+    color: #38bdf8;
+}
+
+.detail-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.detail-summary-item {
+    text-align: center;
+}
+
+.detail-summary-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0ea5e9;
+}
+
+[data-theme="dark"] .detail-summary-value {
+    color: #38bdf8;
+}
+
+.detail-summary-label {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+}
+
+[data-theme="dark"] .detail-summary-label {
+    color: #94a3b8;
+}
+
+.detail-score-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0ea5e9;
+}
+
+[data-theme="dark"] .detail-score-value {
+    color: #38bdf8;
+}
+
+.detail-weight-text {
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+[data-theme="dark"] .detail-weight-text {
+    color: #94a3b8;
+}
+
+.clickable-cell {
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.clickable-cell:hover {
+    background-color: #f0f9ff !important;
+    color: #0ea5e9 !important;
+}
+
+[data-theme="dark"] .clickable-cell:hover {
+    background-color: #1e3a5f !important;
+    color: #38bdf8 !important;
+}
+</style>
+
+<div class="container">
+    <div class="header">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h1>
+                    <span class="iconify" data-icon="mdi:trophy-award" data-width="32" data-height="32"></span>
+                    CAUCOJ 获奖荣誉榜
+                </h1>
+                <p>展示团队成员在各类编程竞赛中的荣誉成就</p>
+            </div>
+            {% if canManage %}
+            <a href="{{ url('rankboard_manage') }}" class="btn btn-primary" style="margin-top: 0;">
+                <span class="iconify" data-icon="mdi:cog" data-width="18" data-height="18"></span>
+                管理
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" class="input" id="searchInput" placeholder="搜索姓名或学号..." />
+                <button class="btn btn-primary" onclick="searchTable()">
+                    <span class="iconify" data-icon="mdi:magnify" data-width="18" data-height="18"></span>
+                    搜索
+                </button>
+                <button class="btn btn-primary" onclick="resetSearch()">
+                    <span class="iconify" data-icon="mdi:refresh" data-width="18" data-height="18"></span>
+                    重置
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="awardTable">
+                <thead>
+                    <tr>
+                        <th rowspan="2">排名</th>
+                        <th rowspan="2">用户名</th>
+                        <th rowspan="2">学号 姓名</th>
+                        <th rowspan="2">基准分</th>
+                        <th colspan="6">天梯赛</th>
+                        <th colspan="3">ICPC</th>
+                        <th colspan="3">CCPC</th>
+                        <th colspan="3">百度之星</th>
+                        <th colspan="3">PAT</th>
+                        <th rowspan="2">OJ题数</th>
+                        <th rowspan="2">总Rating</th>
+                    </tr>
+                    <tr>
+                        <!-- 天梯赛 -->
+                        <th>团队金奖</th>
+                        <th>团队银奖</th>
+                        <th>团队铜奖</th>
+                        <th>个人金奖</th>
+                        <th>个人银奖</th>
+                        <th>个人铜奖</th>
+                        <!-- ICPC -->
+                        <th>金奖</th>
+                        <th>银奖</th>
+                        <th>铜奖</th>
+                        <!-- CCPC -->
+                        <th>金奖</th>
+                        <th>银奖</th>
+                        <th>铜奖</th>
+                        <!-- 百度之星 -->
+                        <th>金奖</th>
+                        <th>银奖</th>
+                        <th>铜奖</th>
+                        <!-- PAT -->
+                        <th>顶级满分</th>
+                        <th>甲级满分</th>
+                        <th>乙级满分</th>
+                    </tr>
+                </thead>
+                <tbody id="awardTableBody">
+                    <!-- 动态生成内容 -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>共有 <span class="count" id="totalCount">0</span> 位成员</p>
+        </div>
+    </div>
+</div>
+
+<!-- 详情模态框 -->
+<div class="modal-overlay" id="detailModal" onclick="closeDetailModalOnOverlay(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="detailModalTitle">获奖详情</div>
+            <button type="button" class="modal-close" onclick="closeDetailModal()">✕</button>
+        </div>
+        <div class="modal-body" id="detailModalBody">
+            <!-- 动态内容 -->
+        </div>
+    </div>
+</div>
+
+<script>
+// 从后端获取数据
+let awardsData = {{ people | dump | safe }};
+
+// 从数据库获取配置
+let baseScore = {{ (config.params.baseScore if config.params else 100) }};
+let decayFactor = {{ (config.params.decayFactor if config.params else 0.3) }};
+let awardWeights = {{ (config.weights or {
+    'ICPC-金奖': 5.0,
+    'ICPC-银奖': 4.0,
+    'ICPC-铜奖': 3.0,
+    'ICPC-EC-金奖': 4.5,
+    'ICPC-EC-银奖': 3.5,
+    'ICPC-EC-铜奖': 2.5,
+    'CCPC-金奖': 4.5,
+    'CCPC-银奖': 3.5,
+    'CCPC-铜奖': 2.5,
+    '百度之星-金奖': 4.0,
+    '百度之星-银奖': 3.0,
+    '百度之星-铜奖': 2.0,
+    'PAT顶级满分': 3.5,
+    'PAT甲级满分': 2.5,
+    'PAT乙级满分': 1.5,
+    '天梯赛-团队全国特等奖': 3.0,
+    '天梯赛-团队全国一等奖': 2.0,
+    '天梯赛-团队全国二等奖': 1.0,
+    '天梯赛-团队全国三等奖': 0.5,
+    '天梯赛-个人全国特等奖': 2.5,
+    '天梯赛-个人全国一等奖': 1.5,
+    '天梯赛-个人全国二等奖': 0.8,
+    '天梯赛-个人全国三等奖': 0.5
+}) | dump | safe }};
+
+let awardLowerBounds = {{ (config.lowerBounds or {
+    'ICPC-金奖': 4.0,
+    'ICPC-银奖': 3.0,
+    'ICPC-铜奖': 2.0,
+    'ICPC-EC-金奖': 3.5,
+    'ICPC-EC-银奖': 2.5,
+    'ICPC-EC-铜奖': 1.5,
+    'CCPC-金奖': 3.5,
+    'CCPC-银奖': 2.5,
+    'CCPC-铜奖': 1.5,
+    '百度之星-金奖': 3.0,
+    '百度之星-银奖': 2.0,
+    '百度之星-铜奖': 1.0,
+    'PAT顶级满分': 2.5,
+    'PAT甲级满分': 1.5,
+    'PAT乙级满分': 0.8,
+    '天梯赛-团队全国特等奖': 2.0,
+    '天梯赛-团队全国一等奖': 1.0,
+    '天梯赛-团队全国二等奖': 0.5,
+    '天梯赛-团队全国三等奖': 0.3,
+    '天梯赛-个人全国特等奖': 1.5,
+    '天梯赛-个人全国一等奖': 0.8,
+    '天梯赛-个人全国二等奖': 0.3,
+    '天梯赛-个人全国三等奖': 0.2
+}) | dump | safe }};
+
+// 输出配置日志
+console.log('========== 排名榜配置信息 ==========');
+console.log('基准分(baseScore):', baseScore);
+console.log('衰减系数(decayFactor):', decayFactor);
+console.log('权重配置(awardWeights):', awardWeights);
+console.log('权重下限(awardLowerBounds):', awardLowerBounds);
+console.log('===================================');
+
+// 计算衰减权重 (对照表格版本 line 1857)
+function calculateDecayedWeight(baseWeight, lowerBound, index, k = 0.3) {
+    const decayed = baseWeight - (baseWeight - lowerBound) * (1 - Math.exp(-k * index));
+    return Math.max(decayed, lowerBound);
+}
+
+// 计算总分 (对照表格版本 line 1867)
+function calculateTotalScore(awards) {
+    const awardTypeCounts = {};
+    
+    awards.forEach(award => {
+        if (!awardTypeCounts[award.type]) {
+            awardTypeCounts[award.type] = 0;
+        }
+        awardTypeCounts[award.type]++;
+    });
+    
+    let totalMultiplier = 1.0;
+    
+    console.log('--- 开始计算总分 ---');
+    console.log('奖项统计:', awardTypeCounts);
+    
+    Object.entries(awardTypeCounts).forEach(([type, count]) => {
+        const baseWeight = awardWeights[type] || 1.0;
+        const lowerBound = awardLowerBounds[type] || baseWeight * 0.5;
+        
+        console.log(`\n奖项类型: ${type}, 数量: ${count}`);
+        console.log(`  基准权重: ${baseWeight}, 下限: ${lowerBound}, 衰减系数: ${decayFactor}`);
+        
+        for (let i = 0; i < count; i++) {
+            const weight = calculateDecayedWeight(baseWeight, lowerBound, i, decayFactor);
+            console.log(`  第${i+1}次获奖 (index=${i}): 权重 = ${weight.toFixed(4)}`);
+            totalMultiplier += weight;
+        }
+    });
+    
+    const finalScore = Math.round(baseScore * totalMultiplier);
+    console.log(`\n总权重倍数: ${totalMultiplier.toFixed(4)}`);
+    console.log(`最终分数: ${baseScore} × ${totalMultiplier.toFixed(4)} = ${finalScore}`);
+    console.log('--- 计算完成 ---\n');
+    
+    return finalScore;
+}
+
+// 统计奖项数量
+function countAwards(awards) {
+    const counts = {};
+    awards.forEach(award => {
+        counts[award.type] = (counts[award.type] || 0) + 1;
+    });
+    return counts;
+}
+
+// 渲染表格 (对照表格版本 line 1898)
+function renderTable(data = awardsData) {
+    const tbody = document.getElementById('awardTableBody');
+    const totalCountElem = document.getElementById('totalCount');
+    
+    console.log('========== 开始渲染表格 ==========');
+    console.log('总人数:', data.length);
+    
+    // 计算分数并排序
+    const sortedData = data.map(person => ({
+        ...person,
+        totalScore: calculateTotalScore(person.awards),
+        awardCounts: countAwards(person.awards)
+    })).sort((a, b) => b.totalScore - a.totalScore);
+    
+    console.log('排序后的数据示例:', sortedData[0]);
+    if (sortedData[0]) {
+        console.log('第一名的奖项统计:', sortedData[0].awardCounts);
+    }
+    console.log('===================================');
+    
+    tbody.innerHTML = '';
+    sortedData.forEach((person, index) => {
+        const row = document.createElement('tr');
+        
+        // 排名
+        const rankCell = document.createElement('td');
+        rankCell.textContent = index + 1;
+        row.appendChild(rankCell);
+        
+        // 用户名 - 点击跳转到用户主页
+        const usernameCell = document.createElement('td');
+        const displayUsername = person.uname || person.username;
+        
+        if (person.userId) {
+            // 如果有用户ID,创建链接跳转到用户主页
+            const link = document.createElement('a');
+            link.href = `/user/${person.userId}`;
+            link.textContent = displayUsername;
+            link.style.fontWeight = 'bold';
+            link.style.color = '#1e40af';
+            link.style.textDecoration = 'none';
+            link.onmouseover = () => link.style.textDecoration = 'underline';
+            link.onmouseout = () => link.style.textDecoration = 'none';
+            usernameCell.appendChild(link);
+        } else {
+            // 没有用户ID,显示普通文本
+            usernameCell.textContent = displayUsername;
+            usernameCell.style.fontWeight = 'bold';
+            usernameCell.style.color = '#6b7280';
+        }
+        row.appendChild(usernameCell);
+        
+        // 学号姓名 - 点击显示所有获奖模态框
+        const studentInfoCell = document.createElement('td');
+        studentInfoCell.textContent = person.studentInfo;
+        studentInfoCell.className = 'clickable-cell';
+        studentInfoCell.style.cursor = 'pointer';
+        studentInfoCell.onclick = () => showPersonAllAwards(person);
+        row.appendChild(studentInfoCell);
+        
+        // 基准分
+        const baseScoreCell = document.createElement('td');
+        baseScoreCell.textContent = baseScore;
+        row.appendChild(baseScoreCell);
+        
+        // 天梯赛奖项 - 使用新格式
+        ['天梯赛-团队全国一等奖', '天梯赛-团队全国二等奖', '天梯赛-团队全国三等奖',
+         '天梯赛-个人全国一等奖', '天梯赛-个人全国二等奖', '天梯赛-个人全国三等奖'].forEach(awardType => {
+            const cell = document.createElement('td');
+            const count = person.awardCounts[awardType] || 0;
+            cell.textContent = count > 0 ? count : '-';
+            if (count > 0) {
+                cell.style.fontWeight = 'bold';
+                cell.style.color = '#1e40af';
+                cell.className = 'clickable-cell';
+                cell.onclick = () => showPersonAwardDetails(person, awardType);
+            }
+            row.appendChild(cell);
+        });
+        
+        // ICPC奖项（合并显示常规和EC） - 使用新格式
+        ['金奖', '银奖', '铜奖'].forEach(level => {
+            const cell = document.createElement('td');
+            const regularCount = person.awardCounts[`ICPC-${level}`] || 0;
+            const ecCount = person.awardCounts[`ICPC-EC-${level}`] || 0;
+            
+            const levelColors = {
+                '金奖': '#f59e0b',
+                '银奖': '#94a3b8',
+                '铜奖': '#fb923c'
+            };
+            
+            if (regularCount > 0 || ecCount > 0) {
+                if (ecCount > 0) {
+                    cell.innerHTML = `<span style="color: #1e40af;">${regularCount}</span><span style="color: ${levelColors[level]};">(+${ecCount})</span>`;
+                } else {
+                    cell.textContent = regularCount;
+                }
+                cell.style.fontWeight = 'bold';
+                if (ecCount === 0) {
+                    cell.style.color = '#1e40af';
+                }
+                cell.className = 'clickable-cell';
+                cell.onclick = () => {
+                    showPersonAwardDetails(person, `ICPC-${level}`);
+                };
+            } else {
+                cell.textContent = '-';
+            }
+            row.appendChild(cell);
+        });
+        
+        // CCPC和其他奖项 - 使用新格式
+        ['CCPC-金奖', 'CCPC-银奖', 'CCPC-铜奖',
+         '百度之星-金奖', '百度之星-银奖', '百度之星-铜奖',
+         'PAT顶级满分', 'PAT甲级满分', 'PAT乙级满分'].forEach(awardType => {
+            const cell = document.createElement('td');
+            const count = person.awardCounts[awardType] || 0;
+            cell.textContent = count > 0 ? count : '-';
+            if (count > 0) {
+                cell.style.fontWeight = 'bold';
+                cell.style.color = '#1e40af';
+                cell.className = 'clickable-cell';
+                cell.onclick = () => showPersonAwardDetails(person, awardType);
+            }
+            row.appendChild(cell);
+        });
+        
+        // OJ题数
+        const ojProblemsCell = document.createElement('td');
+        ojProblemsCell.textContent = person.ojProblems || 0;
+        ojProblemsCell.style.color = '#7c3aed';
+        ojProblemsCell.style.fontWeight = '600';
+        row.appendChild(ojProblemsCell);
+        
+        // 总分
+        const totalScoreCell = document.createElement('td');
+        totalScoreCell.textContent = person.totalScore;
+        totalScoreCell.style.fontWeight = 'bold';
+        totalScoreCell.style.fontSize = '1.1rem';
+        totalScoreCell.style.color = '#0ea5e9';
+        row.appendChild(totalScoreCell);
+        
+        tbody.appendChild(row);
+    });
+    
+    totalCountElem.textContent = data.length;
+}
+
+// 显示人员特定奖项详情 (对照表格版本 line 2065)
+function showPersonAwardDetails(person, awardType) {
+    const modal = document.getElementById('detailModal');
+    const titleElem = document.getElementById('detailModalTitle');
+    const bodyElem = document.getElementById('detailModalBody');
+    
+    // 筛选出该奖项类型的所有获奖记录（如果是ICPC，包含ICPC-EC）
+    let awards;
+    let displayType = awardType;
+    
+    if (awardType.startsWith('ICPC') && !awardType.startsWith('ICPC-EC')) {
+        const regularAwards = person.awards.filter(award => award.type === awardType);
+        const ecAwards = person.awards.filter(award => award.type === awardType.replace('ICPC', 'ICPC-EC'));
+        awards = [...regularAwards, ...ecAwards];
+    } else {
+        awards = person.awards.filter(award => award.type === awardType);
+    }
+    
+    titleElem.textContent = `${person.uname || person.username} - ${displayType}`;
+    
+    // 计算该奖项类型的总权重贡献
+    let totalWeight = 0;
+    let regularCount = 0;
+    let ecCount = 0;
+    
+    const isICPCOrCCPC = awardType.startsWith('ICPC') || awardType.startsWith('CCPC');
+    
+    awards.forEach(award => {
+        const isEC = award.type.startsWith('ICPC-EC');
+        const baseWeight = awardWeights[award.type] || 1.0;
+        const lowerBound = awardLowerBounds[award.type] || baseWeight * 0.5;
+        
+        // 统一使用count-based衰减,不再使用liveRank
+        const index = isEC ? ecCount : regularCount;
+        const weight = calculateDecayedWeight(baseWeight, lowerBound, index, decayFactor);
+        
+        totalWeight += weight;
+        
+        if (isEC) {
+            ecCount++;
+        } else {
+            regularCount++;
+        }
+    });
+    
+    const scoreContribution = Math.round(baseScore * totalWeight);
+    
+    // 渲染内容
+    bodyElem.innerHTML = `
+        <div class="detail-summary">
+            <div class="detail-summary-title" style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="iconify" data-icon="mdi:chart-bar" data-width="20" data-height="20"></span>
+                <span>统计信息</span>
+            </div>
+            <div class="detail-summary-grid">
+                <div class="detail-summary-item">
+                    <div class="detail-summary-value">${awards.length}</div>
+                    <div class="detail-summary-label">获奖次数</div>
+                </div>
+                <div class="detail-summary-item">
+                    <div class="detail-summary-value">${totalWeight.toFixed(2)}×</div>
+                    <div class="detail-summary-label">总权重倍数</div>
+                </div>
+                <div class="detail-summary-item">
+                    <div class="detail-summary-value">${scoreContribution}</div>
+                    <div class="detail-summary-label">分数贡献</div>
+                </div>
+            </div>
+        </div>
+        
+        ${awards.length > 0 ? (() => {
+            let regularIndex = 0;
+            let ecIndex = 0;
+            
+            return awards.map((award) => {
+                const isEC = award.type.startsWith('ICPC-EC');
+                const baseWeight = awardWeights[award.type] || 1.0;
+                const lowerBound = awardLowerBounds[award.type] || baseWeight * 0.5;
+                
+                // 统一使用count-based衰减,不再使用liveRank
+                const index = isEC ? ecIndex++ : regularIndex++;
+                const weight = calculateDecayedWeight(baseWeight, lowerBound, index, decayFactor);
+                
+                const score = Math.round(baseScore * weight);
+                
+                let badgeClass = '';
+                if (award.type.includes('金奖')) badgeClass = 'gold';
+                else if (award.type.includes('银奖')) badgeClass = 'silver';
+                else if (award.type.includes('铜奖')) badgeClass = 'bronze';
+                
+                const showRank = award.type.startsWith('ICPC') || award.type.startsWith('CCPC');
+                const isLadder = award.type.startsWith('天梯赛');
+                
+                return `
+                    <div class="detail-card">
+                        <div class="detail-card-header">
+                            <div class="detail-award-type">
+                                <span class="detail-award-badge ${badgeClass}">${award.type}</span>
+                                ${isEC ? '<span style="margin-left: 0.5rem; padding: 0.125rem 0.5rem; background: #f59e0b; color: white; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600;">EC</span>' : ''}
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="detail-score-value">${score} 分</div>
+                                <div class="detail-weight-text">权重: ${weight.toFixed(2)}×</div>
+                            </div>
+                        </div>
+                        <div class="detail-info-grid">
+                            <div class="detail-info-item">
+                                <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
+                                    <span class="iconify" data-icon="mdi:trophy" data-width="16" data-height="16"></span>
+                                    <span>赛事名称</span>
+                                </div>
+                                <div class="detail-info-value">${award.contest || '未填写'}</div>
+                            </div>
+                            <div class="detail-info-item">
+                                <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
+                                    <span class="iconify" data-icon="mdi:calendar" data-width="16" data-height="16"></span>
+                                    <span>获奖时间</span>
+                                </div>
+                                <div class="detail-info-value">${award.date || '未填写'}</div>
+                            </div>
+                            ${showRank && award.liveRank ? `
+                            <div class="detail-info-item">
+                                <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
+                                    <span class="iconify" data-icon="mdi:chart-line" data-width="16" data-height="16"></span>
+                                    <span>赛时排名</span>
+                                </div>
+                                <div class="detail-info-value" style="color: #f59e0b; font-weight: 600;">Rank ${award.liveRank}</div>
+                            </div>
+                            ` : ''}
+                            ${showRank && award.schoolRank ? `
+                            <div class="detail-info-item">
+                                <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
+                                    <span class="iconify" data-icon="mdi:school" data-width="16" data-height="16"></span>
+                                    <span>学校排名</span>
+                                </div>
+                                <div class="detail-info-value" style="color: #8b5cf6; font-weight: 600;">Rank ${award.schoolRank}</div>
+                            </div>
+                            ` : ''}
+                            ${isLadder && award.score ? `
+                            <div class="detail-info-item">
+                                <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
+                                    <span class="iconify" data-icon="mdi:numeric" data-width="16" data-height="16"></span>
+                                    <span>比赛分数</span>
+                                </div>
+                                <div class="detail-info-value" style="color: #10b981; font-weight: 600;">${award.score} 分</div>
+                            </div>
+                            ` : ''}
+                            ${award.team ? `
+                            <div class="detail-info-item" style="grid-column: 1 / -1;">
+                                <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
+                                    <span class="iconify" data-icon="mdi:account-group" data-width="16" data-height="16"></span>
+                                    <span>团队名称</span>
+                                </div>
+                                <div class="detail-info-value">${award.team}${award.teammates && award.teammates.length > 0 ? ` (${award.teammates.join('，')})` : ''}</div>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        })() : '<div class="detail-empty">暂无获奖记录</div>'}
+    `;
+    
+    modal.style.display = 'flex';
+}
+
+// 显示人员所有获奖记录
+function showPersonAllAwards(person) {
+    const modal = document.getElementById('detailModal');
+    const titleElem = document.getElementById('detailModalTitle');
+    const bodyElem = document.getElementById('detailModalBody');
+    
+    titleElem.textContent = `${person.uname || person.username} (${person.studentInfo}) - 所有获奖`;
+    
+    const totalScore = calculateTotalScore(person.awards);
+    
+    // 计算总权重
+    let totalMultiplier = 1.0;
+    const awardTypeCounts = {};
+    
+    person.awards.forEach(award => {
+        if (!awardTypeCounts[award.type]) {
+            awardTypeCounts[award.type] = [];
+        }
+        awardTypeCounts[award.type].push(award);
+    });
+    
+    Object.entries(awardTypeCounts).forEach(([type, awardsList]) => {
+        const baseWeight = awardWeights[type] || 1.0;
+        const lowerBound = awardLowerBounds[type] || baseWeight * 0.5;
+        
+        // 统一使用count-based衰减
+        for (let i = 0; i < awardsList.length; i++) {
+            const weight = calculateDecayedWeight(baseWeight, lowerBound, i, decayFactor);
+            totalMultiplier += weight;
+        }
+    });
+    
+    // 渲染内容
+    bodyElem.innerHTML = `
+        <div class="detail-summary">
+            <div class="detail-summary-title" style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="iconify" data-icon="mdi:chart-bar" data-width="20" data-height="20"></span>
+                <span>总体统计</span>
+            </div>
+            <div class="detail-summary-grid">
+                <div class="detail-summary-item">
+                    <div class="detail-summary-value">${person.awards.length}</div>
+                    <div class="detail-summary-label">总获奖数</div>
+                </div>
+                <div class="detail-summary-item">
+                    <div class="detail-summary-value">${totalMultiplier.toFixed(2)}×</div>
+                    <div class="detail-summary-label">总权重倍数</div>
+                </div>
+                <div class="detail-summary-item">
+                    <div class="detail-summary-value">${totalScore}</div>
+                    <div class="detail-summary-label">总分</div>
+                </div>
+            </div>
+        </div>
+        
+        ${person.awards.length > 0 ? person.awards.map((award) => {
+            const baseWeight = awardWeights[award.type] || 1.0;
+            const lowerBound = awardLowerBounds[award.type] || baseWeight * 0.5;
+            
+            // 统一使用count-based衰减
+            const sameTypeAwards = person.awards.filter(a => a.type === award.type);
+            const typeIndex = sameTypeAwards.indexOf(award);
+            const weight = calculateDecayedWeight(baseWeight, lowerBound, typeIndex, decayFactor);
+            
+            const score = Math.round(baseScore * weight);
+            
+            let badgeClass = '';
+            if (award.type.includes('金奖')) badgeClass = 'gold';
+            else if (award.type.includes('银奖')) badgeClass = 'silver';
+            else if (award.type.includes('铜奖')) badgeClass = 'bronze';
+            
+            const showRank = award.type.startsWith('ICPC') || award.type.startsWith('CCPC');
+            const isLadder = award.type.startsWith('天梯赛');
+            
+            return `
+                <div class="detail-card">
+                    <div class="detail-card-header">
+                        <div class="detail-award-type">
+                            <span class="detail-award-badge ${badgeClass}">${award.type}</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="detail-score-value">${score} 分</div>
+                            <div class="detail-weight-text">权重: ${weight.toFixed(2)}×</div>
+                        </div>
+                    </div>
+                    <div class="detail-info-grid">
+                        <div class="detail-info-item">
+                            <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
+                                <span class="iconify" data-icon="mdi:trophy" data-width="16" data-height="16"></span>
+                                <span>赛事名称</span>
+                            </div>
+                            <div class="detail-info-value">${award.contest || '未填写'}</div>
+                        </div>
+                        <div class="detail-info-item">
+                            <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
+                                <span class="iconify" data-icon="mdi:calendar" data-width="16" data-height="16"></span>
+                                <span>获奖时间</span>
+                            </div>
+                            <div class="detail-info-value">${award.date || '未填写'}</div>
+                        </div>
+                        ${showRank && award.liveRank ? `
+                        <div class="detail-info-item">
+                            <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
+                                <span class="iconify" data-icon="mdi:chart-line" data-width="16" data-height="16"></span>
+                                <span>赛时排名</span>
+                            </div>
+                            <div class="detail-info-value" style="color: #f59e0b; font-weight: 600;">Rank ${award.liveRank}</div>
+                        </div>
+                        ` : ''}
+                        ${showRank && award.schoolRank ? `
+                        <div class="detail-info-item">
+                            <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
+                                <span class="iconify" data-icon="mdi:school" data-width="16" data-height="16"></span>
+                                <span>学校排名</span>
+                            </div>
+                            <div class="detail-info-value" style="color: #8b5cf6; font-weight: 600;">Rank ${award.schoolRank}</div>
+                        </div>
+                        ` : ''}
+                        ${isLadder && award.score ? `
+                        <div class="detail-info-item">
+                            <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
+                                <span class="iconify" data-icon="mdi:numeric" data-width="16" data-height="16"></span>
+                                <span>比赛分数</span>
+                            </div>
+                            <div class="detail-info-value" style="color: #10b981; font-weight: 600;">${award.score} 分</div>
+                        </div>
+                        ` : ''}
+                        ${award.team ? `
+                        <div class="detail-info-item" style="grid-column: 1 / -1;">
+                            <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
+                                <span class="iconify" data-icon="mdi:account-group" data-width="16" data-height="16"></span>
+                                <span>团队名称</span>
+                            </div>
+                            <div class="detail-info-value">${award.team}${award.teammates && award.teammates.length > 0 ? ` (${award.teammates.join('，')})` : ''}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('') : '<div class="detail-empty">暂无获奖记录</div>'}
+    `;
+    
+    modal.style.display = 'flex';
+}
+
+// 关闭详情模态框
+function closeDetailModal() {
+    document.getElementById('detailModal').style.display = 'none';
+}
+
+// 点击遮罩关闭详情模态框
+function closeDetailModalOnOverlay(event) {
+    if (event.target.classList.contains('modal-overlay')) {
+        closeDetailModal();
+    }
+}
+
+// 搜索功能
+function searchTable() {
+    const searchText = document.getElementById('searchInput').value.toLowerCase().trim();
+    if (!searchText) {
+        renderTable();
+        return;
+    }
+    
+    const filteredData = awardsData.filter(person => 
+        person.username.toLowerCase().includes(searchText) ||
+        person.studentInfo.toLowerCase().includes(searchText)
+    );
+    
+    renderTable(filteredData);
+}
+
+// 重置搜索
+function resetSearch() {
+    document.getElementById('searchInput').value = '';
+    renderTable();
+}
+
+// 搜索框回车搜索
+document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        searchTable();
+    }
+});
+
+// 页面加载时渲染表格
+document.addEventListener('DOMContentLoaded', function() {
+    renderTable();
+});
+</script>
+
+{% endblock %}

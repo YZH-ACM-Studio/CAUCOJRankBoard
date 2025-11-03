@@ -1,0 +1,234 @@
+{% extends "layout/basic.html" %}
+
+{% block content %}
+<style>
+  .detail-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  .detail-header {
+    background: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+  }
+
+  .detail-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+
+  .detail-info {
+    display: flex;
+    gap: 2rem;
+    color: #6b7280;
+    font-size: 0.95rem;
+  }
+
+  .awards-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .awards-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .award-item {
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+  }
+
+  .award-item:hover {
+    border-color: #0ea5e9;
+    box-shadow: 0 4px 6px rgba(14, 165, 233, 0.1);
+  }
+
+  .award-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .award-type {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #1f2937;
+  }
+
+  .award-score {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0ea5e9;
+  }
+
+  .award-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .award-detail-item {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .detail-label {
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .detail-value {
+    color: #6b7280;
+  }
+
+  .teammates-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .teammate-tag {
+    padding: 0.25rem 0.5rem;
+    background: #ede9fe;
+    color: #7c3aed;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+    color: #0ea5e9;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  .ec-award {
+    color: #f59e0b;
+    font-weight: 600;
+  }
+</style>
+
+<div class="detail-container">
+  <a href="{{ url('rankboard_main') }}" class="back-link">← 返回排名榜</a>
+
+  <div class="detail-header">
+    <h1>{{ person.username }}</h1>
+    <div class="detail-info">
+      <span><strong>学号信息:</strong> {{ person.studentInfo }}</span>
+      <span><strong>OJ 题数:</strong> {{ person.ojProblems | default(0) }}</span>
+      <span><strong>获奖数量:</strong> {{ person.awards | length }}</span>
+    </div>
+  </div>
+
+  <div class="awards-section">
+    <h2 class="awards-title">
+      <span>🏅</span>
+      <span>获奖情况</span>
+    </h2>
+
+    {% if (person.awards | length) == 0 %}
+      <p style="text-align: center; color: #9ca3af; padding: 2rem;">暂无获奖记录</p>
+    {% else %}
+      {% for award in person.awards %}
+      <div class="award-item">
+        <div class="award-header">
+          <div class="award-type">
+            {{ award.type }}
+            {% if 'ICPC-EC' in award.type %}
+              <span class="ec-award">(EC Final)</span>
+            {% endif %}
+          </div>
+          <div class="award-score">{{ award.score | round(2) }} 分</div>
+        </div>
+
+        <div class="award-details">
+          {% if award.contest %}
+          <div class="award-detail-item">
+            <span class="detail-label">比赛:</span>
+            <span class="detail-value">{{ award.contest }}</span>
+          </div>
+          {% endif %}
+
+          {% if award.date %}
+          <div class="award-detail-item">
+            <span class="detail-label">日期:</span>
+            <span class="detail-value">{{ award.date }}</span>
+          </div>
+          {% endif %}
+
+          {% if award.team %}
+          <div class="award-detail-item">
+            <span class="detail-label">队伍:</span>
+            <span class="detail-value">{{ award.team }}</span>
+          </div>
+          {% endif %}
+
+          {% if award.liveRank %}
+          <div class="award-detail-item">
+            <span class="detail-label">实时排名:</span>
+            <span class="detail-value">{{ award.liveRank }}</span>
+          </div>
+          {% endif %}
+
+          {% if award.schoolRank %}
+          <div class="award-detail-item">
+            <span class="detail-label">学校排名:</span>
+            <span class="detail-value">{{ award.schoolRank }}</span>
+          </div>
+          {% endif %}
+
+          {% if award.score %}
+          <div class="award-detail-item">
+            <span class="detail-label">比赛分数:</span>
+            <span class="detail-value">{{ award.score }}</span>
+          </div>
+          {% endif %}
+
+          {% if award.weight %}
+          <div class="award-detail-item">
+            <span class="detail-label">基础权重:</span>
+            <span class="detail-value">{{ award.weight }}</span>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if award.teammates and (award.teammates | length) > 0 %}
+        <div class="teammates-list">
+          <span class="detail-label">队友:</span>
+          {% for teammate in award.teammates %}
+            <span class="teammate-tag">{{ teammate }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
