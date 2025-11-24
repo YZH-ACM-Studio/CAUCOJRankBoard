@@ -56,7 +56,7 @@ body {
 }
 
 .container {
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 2rem 1rem;
 }
@@ -478,6 +478,7 @@ tbody tr:hover {
                         <th colspan="3">百度之星</th>
                         <th colspan="3">PAT</th>
                         <th rowspan="2">OJ题数</th>
+                        <th rowspan="2">就业去向</th>
                         <th rowspan="2">总Rating</th>
                     </tr>
                     <tr>
@@ -529,6 +530,12 @@ tbody tr:hover {
             <!-- 动态内容 -->
         </div>
     </div>
+</div>
+
+<!-- 全屏图片查看器 -->
+<div id="imageViewer" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.95); z-index: 10000; justify-content: center; align-items: center;" onclick="closeImageViewer()">
+    <button onclick="closeImageViewer()" style="position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.2); border: 2px solid white; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'">✕</button>
+    <img id="fullScreenImage" src="" alt="全屏图片" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);" onclick="event.stopPropagation()">
 </div>
 
 <script>
@@ -787,6 +794,13 @@ function renderTable(data = awardsData) {
         ojProblemsCell.style.fontWeight = '600';
         row.appendChild(ojProblemsCell);
         
+        // 就业去向
+        const employmentCell = document.createElement('td');
+        employmentCell.textContent = person.employmentStatus || '-';
+        employmentCell.style.color = '#059669';
+        employmentCell.style.fontWeight = '500';
+        row.appendChild(employmentCell);
+        
         // 总分
         const totalScoreCell = document.createElement('td');
         totalScoreCell.textContent = person.totalScore;
@@ -939,6 +953,20 @@ function showPersonAwardDetails(person, awardType) {
                                 <div class="detail-info-value" style="color: #8b5cf6; font-weight: 600;">Rank ${award.schoolRank}</div>
                             </div>
                             ` : ''}
+                            ${award.imageUrl ? `
+                            <div class="detail-info-item">
+                                <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
+                                    <span class="iconify" data-icon="mdi:image" data-width="16" data-height="16"></span>
+                                    <span>团队照片</span>
+                                </div>
+                                <div class="detail-info-value">
+                                    <img src="${award.imageUrl}" 
+                                         alt="团队照片" 
+                                         style="max-width: 120px; max-height: 80px; border-radius: 0.25rem; cursor: pointer; object-fit: cover; border: 2px solid #e5e7eb;"
+                                         onclick="showFullScreenImage('${award.imageUrl}')">
+                                </div>
+                            </div>
+                            ` : ''}
                             ${isLadder && award.score ? `
                             <div class="detail-info-item">
                                 <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
@@ -1085,6 +1113,20 @@ function showPersonAllAwards(person) {
                             <div class="detail-info-value" style="color: #8b5cf6; font-weight: 600;">Rank ${award.schoolRank}</div>
                         </div>
                         ` : ''}
+                        ${award.imageUrl ? `
+                        <div class="detail-info-item">
+                            <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
+                                <span class="iconify" data-icon="mdi:image" data-width="16" data-height="16"></span>
+                                <span>团队照片</span>
+                            </div>
+                            <div class="detail-info-value">
+                                <img src="${award.imageUrl}" 
+                                     alt="团队照片" 
+                                     style="max-width: 120px; max-height: 80px; border-radius: 0.25rem; cursor: pointer; object-fit: cover; border: 2px solid #e5e7eb;"
+                                     onclick="showFullScreenImage('${award.imageUrl}')">
+                            </div>
+                        </div>
+                        ` : ''}
                         ${isLadder && award.score ? `
                         <div class="detail-info-item">
                             <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
@@ -1122,6 +1164,24 @@ function closeDetailModalOnOverlay(event) {
     if (event.target.classList.contains('modal-overlay')) {
         closeDetailModal();
     }
+}
+
+// 显示全屏图片
+function showFullScreenImage(imageUrl) {
+    const viewer = document.getElementById('imageViewer');
+    const img = document.getElementById('fullScreenImage');
+    img.src = imageUrl;
+    viewer.style.display = 'flex';
+    // 阻止body滚动
+    document.body.style.overflow = 'hidden';
+}
+
+// 关闭全屏图片
+function closeImageViewer() {
+    const viewer = document.getElementById('imageViewer');
+    viewer.style.display = 'none';
+    // 恢复body滚动
+    document.body.style.overflow = 'auto';
 }
 
 // 搜索功能

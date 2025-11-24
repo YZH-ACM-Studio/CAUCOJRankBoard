@@ -481,6 +481,13 @@ function renderEditPanel() {
              oninput="updatePersonField('ojProblems', parseInt(this.value) || 0)">
     </div>
     
+    <div class="form-group">
+      <label class="form-label">就业去向</label>
+      <input type="text" class="form-input" value="${escapeHtml(currentPerson.employmentStatus || '')}" 
+             placeholder="例如：字节跳动、阿里巴巴、考研等" 
+             oninput="updatePersonField('employmentStatus', this.value)">
+    </div>
+    
     <div class="awards-section">
       <div class="awards-header">
         <h3>获奖记录 (${currentPerson.awards ? currentPerson.awards.length : 0})</h3>
@@ -558,6 +565,14 @@ function renderAwards() {
                    oninput="updateAwardField(${index}, 'date', this.value)" placeholder="例如: 2024-01">
           </div>
         </div>
+        
+        ${(isICPC || isCCPC || isLadder) ? `
+        <div style="margin-bottom: 0.5rem;">
+          <label class="form-label">团队图片URL（可选）</label>
+          <input type="text" class="form-input" value="${escapeHtml(award.imageUrl || '')}" 
+                 oninput="updateAwardField(${index}, 'imageUrl', this.value)" placeholder="例如: https://example.com/team-photo.jpg">
+        </div>
+        ` : ''}
         
         <div style="display: grid; grid-template-columns: ${showRank ? '2fr 1fr 1fr auto' : showScore ? '2fr 1fr auto' : '1fr auto'}; gap: 0.5rem; align-items: end;">
           <div>
@@ -726,6 +741,7 @@ function addNewPerson() {
     username: '新用户',
     studentInfo: '学号 姓名',
     ojProblems: 0,
+    employmentStatus: '',
     awards: []
   };
   allPeople.push(newPerson);

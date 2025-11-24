@@ -26,6 +26,7 @@ interface Award {
   schoolRank?: number;
   score?: number;
   teammates?: string[];
+  imageUrl?: string;  // 团队图片URL
 }
 
 interface PersonData {
@@ -36,6 +37,7 @@ interface PersonData {
   awards: Award[];
   userId?: number;  // 添加用户ID字段
   uname?: string;   // 添加真实用户名字段
+  employmentStatus?: string;  // 就业去向
 }
 
 interface AwardWeights {
@@ -436,6 +438,7 @@ class RankBoardManageHandler extends Handler {
               domainId,
               ojProblems: p.ojProblems || 0,
               awards: p.awards || [],
+              employmentStatus: p.employmentStatus || '',
               userId,
               uname,
             };
