@@ -26,7 +26,7 @@ interface Award {
   schoolRank?: number;
   score?: number;
   teammates?: string[];
-  imageUrl?: string;  // 团队图片URL
+  imageUrls?: string[];  // 团队图片URL列表（支持多张）
 }
 
 interface PersonData {

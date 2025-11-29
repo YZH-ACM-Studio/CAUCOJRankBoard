@@ -953,17 +953,20 @@ function showPersonAwardDetails(person, awardType) {
                                 <div class="detail-info-value" style="color: #8b5cf6; font-weight: 600;">Rank ${award.schoolRank}</div>
                             </div>
                             ` : ''}
-                            ${award.imageUrl ? `
-                            <div class="detail-info-item">
+                            ${(award.imageUrls && award.imageUrls.length > 0) ? `
+                            <div class="detail-info-item" style="grid-column: 1 / -1;">
                                 <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
-                                    <span class="iconify" data-icon="mdi:image" data-width="16" data-height="16"></span>
-                                    <span>团队照片</span>
+                                    <span class="iconify" data-icon="mdi:image-multiple" data-width="16" data-height="16"></span>
+                                    <span>团队照片 (${award.imageUrls.length})</span>
                                 </div>
-                                <div class="detail-info-value">
-                                    <img src="${award.imageUrl}" 
-                                         alt="团队照片" 
-                                         style="max-width: 120px; max-height: 80px; border-radius: 0.25rem; cursor: pointer; object-fit: cover; border: 2px solid #e5e7eb;"
-                                         onclick="showFullScreenImage('${award.imageUrl}')">
+                                <div class="detail-info-value" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                    ${award.imageUrls.map((url, imgIndex) => `
+                                        <img src="${url}" 
+                                             alt="团队照片 ${imgIndex + 1}" 
+                                             style="max-width: 100px; max-height: 70px; border-radius: 0.25rem; cursor: pointer; object-fit: cover; border: 2px solid #e5e7eb; transition: transform 0.2s;"
+                                             onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"
+                                             onclick="showFullScreenImage('${url}')">
+                                    `).join('')}
                                 </div>
                             </div>
                             ` : ''}
@@ -1113,17 +1116,20 @@ function showPersonAllAwards(person) {
                             <div class="detail-info-value" style="color: #8b5cf6; font-weight: 600;">Rank ${award.schoolRank}</div>
                         </div>
                         ` : ''}
-                        ${award.imageUrl ? `
-                        <div class="detail-info-item">
+                        ${(award.imageUrls && award.imageUrls.length > 0) ? `
+                        <div class="detail-info-item" style="grid-column: 1 / -1;">
                             <div class="detail-info-label" style="display: flex; align-items: center; gap: 0.25rem;">
-                                <span class="iconify" data-icon="mdi:image" data-width="16" data-height="16"></span>
-                                <span>团队照片</span>
+                                <span class="iconify" data-icon="mdi:image-multiple" data-width="16" data-height="16"></span>
+                                <span>团队照片 (${award.imageUrls.length})</span>
                             </div>
-                            <div class="detail-info-value">
-                                <img src="${award.imageUrl}" 
-                                     alt="团队照片" 
-                                     style="max-width: 120px; max-height: 80px; border-radius: 0.25rem; cursor: pointer; object-fit: cover; border: 2px solid #e5e7eb;"
-                                     onclick="showFullScreenImage('${award.imageUrl}')">
+                            <div class="detail-info-value" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                ${award.imageUrls.map((url, imgIndex) => `
+                                    <img src="${url}" 
+                                         alt="团队照片 ${imgIndex + 1}" 
+                                         style="max-width: 100px; max-height: 70px; border-radius: 0.25rem; cursor: pointer; object-fit: cover; border: 2px solid #e5e7eb; transition: transform 0.2s;"
+                                         onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"
+                                         onclick="showFullScreenImage('${url}')">
+                                `).join('')}
                             </div>
                         </div>
                         ` : ''}

@@ -526,9 +526,9 @@ function renderAwards() {
     const baseType = isEC ? award.type.replace('ICPC-EC', 'ICPC') : award.type;
     
     return `
-    <div class="award-item" draggable="true" ondragstart="handleDragStart(${index})" 
-         ondragover="handleDragOver(event)" ondrop="handleDrop(${index})">
-      <div class="drag-handle">
+    <div class="award-item" id="award-item-${index}" ondragover="handleDragOver(event)" ondrop="handleDrop(${index})">
+      <div class="drag-handle" draggable="true" ondragstart="handleDragStart(event, ${index})" 
+           style="cursor: grab;" onmousedown="this.parentElement.style.opacity='0.8'" onmouseup="this.parentElement.style.opacity='1'">
         <span class="iconify" data-icon="mdi:drag-vertical" data-width="24"></span>
       </div>
       <div class="award-item-content">
@@ -568,9 +568,12 @@ function renderAwards() {
         
         ${(isICPC || isCCPC || isLadder) ? `
         <div style="margin-bottom: 0.5rem;">
-          <label class="form-label">团队图片URL（可选）</label>
-          <input type="text" class="form-input" value="${escapeHtml(award.imageUrl || '')}" 
-                 oninput="updateAwardField(${index}, 'imageUrl', this.value)" placeholder="例如: https://example.com/team-photo.jpg">
+          <label class="form-label">团队图片URL（可选，每行一个URL支持多张）</label>
+          <textarea class="form-input" rows="2" style="resize: vertical; min-height: 60px;"
+                    oninput="updateImageUrls(${index}, this.value)" 
+                    placeholder="每行一个URL，例如：
+https://example.com/photo1.jpg
+https://example.com/photo2.jpg">${(award.imageUrls || []).join('\n')}</textarea>
         </div>
         ` : ''}
         
@@ -749,16 +752,26 @@ function addNewPerson() {
   selectPerson(allPeople.length - 1);
 }
 
-// 拖拽功能
-function handleDragStart(index) {
+// 拖拽功能 - 只从手柄拖拽
+function handleDragStart(event, index) {
   draggedAwardIndex = index;
+  event.dataTransfer.effectAllowed = 'move';
+  // 设置拖拽时的视觉效果
+  const awardItem = document.getElementById('award-item-' + index);
+  if (awardItem) {
+    awardItem.style.opacity = '0.5';
+  }
 }
 
 function handleDragOver(event) {
   event.preventDefault();
+  event.dataTransfer.dropEffect = 'move';
 }
 
 function handleDrop(index) {
+  // 恢复所有奖项的透明度
+  document.querySelectorAll('.award-item').forEach(el => el.style.opacity = '1');
+  
   if (draggedAwardIndex !== null && draggedAwardIndex !== index && currentPerson && currentPerson.awards) {
     const awards = currentPerson.awards;
     const draggedItem = awards[draggedAwardIndex];
@@ -769,6 +782,16 @@ function handleDrop(index) {
     allPeople[currentPersonIndex] = currentPerson;
     renderAwards();
     draggedAwardIndex = null;
+  }
+}
+
+// 更新多图片URL
+function updateImageUrls(index, value) {
+  if (currentPerson && currentPerson.awards && currentPerson.awards[index]) {
+    // 按行分割，过滤空行
+    const urls = value.split('\\n').map(url => url.trim()).filter(url => url.length > 0);
+    currentPerson.awards[index].imageUrls = urls;
+    allPeople[currentPersonIndex] = currentPerson;
   }
 }
 
